@@ -21,18 +21,27 @@ class MainViewController: UIViewController {
         return collectionView
     }()
     
+    lazy var button: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Update Layout", for: .normal)
+        button.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
+        return button
+    }()
+    
     private var viewControllersForCells: [UIViewController] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
         setupCollectionView()
+        setupButton()
         fillControllers()
     }
     
     private func setupCollectionView() {
-        view.insertSubview(collectionView, at: 0)
-        collectionView.frame = view.bounds
-        collectionView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
+        view.addSubview(collectionView)
+        collectionView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.backgroundColor = .white
@@ -42,12 +51,25 @@ class MainViewController: UIViewController {
         collectionView.bounces = true
     }
     
+    private func setupButton() {
+        view.addSubview(button)
+        button.snp.makeConstraints {
+            $0.height.equalTo(50)
+            $0.leading.equalToSuperview().offset(20)
+            $0.trailing.bottom.equalToSuperview().offset(-20)
+        }
+    }
+    
     private func fillControllers() {
-        let viewController = ImageWithTitleViewController()
-        for _ in 1...3 {
+        for _ in 1...1 {
+            let viewController = ImageWithTitleViewController()
             viewControllersForCells.append(viewController)
         }
         collectionView.reloadData()
+    }
+    
+    @objc func buttonPressed(_ : UIControl) {
+        collectionView.collectionViewLayout.invalidateLayout()
     }
 }
 
@@ -71,10 +93,6 @@ extension MainViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell: SelfSizedCollectionViewCell = collectionView.dequeueCell(for: indexPath)
         cell.contentViewController = viewControllersForCells[indexPath.item]
-        cell.addContentViewController(self)
         return cell
     }
-    
-    
-    
 }

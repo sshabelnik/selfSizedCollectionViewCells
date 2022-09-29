@@ -9,9 +9,29 @@ import UIKit
 import SnapKit
 
 final class SelfSizedCollectionViewCell: UICollectionViewCell {
+    
+    var mainView = UIView()
+    
     var contentViewController: UIViewController?
 
     var isHeightCalculated = false
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        contentView.addSubview(mainView)
+        contentView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+            
+        }
+        mainView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+            $0.width.equalTo(UIScreen.main.bounds.width).priority(999)
+        }
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -19,18 +39,18 @@ final class SelfSizedCollectionViewCell: UICollectionViewCell {
     }
     
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
-//        if !isHeightCalculated {
-//            setNeedsLayout()
-//            layoutIfNeeded()
-            
+        if !isHeightCalculated {
+            let layoutAttributes = super.preferredLayoutAttributesFitting(layoutAttributes)
+            setNeedsLayout()
+            layoutIfNeeded()
+
             let size = contentView.systemLayoutSizeFitting(layoutAttributes.size)
             var frame = layoutAttributes.frame
-            frame.size.width = UIScreen.main.bounds.width
             frame.size.height = ceil(size.height)
             layoutAttributes.frame = frame
             isHeightCalculated = true
             print("NEW FRAME IS: \(frame)")
-//        }
+        }
         return layoutAttributes
     }
     
@@ -39,8 +59,7 @@ final class SelfSizedCollectionViewCell: UICollectionViewCell {
         contentViewController.willMove(toParent: parentViewController)
         parentViewController.addChild(contentViewController)
         contentViewController.didMove(toParent: parentViewController)
-        contentView.addSubview(contentViewController.view)
-        contentViewController.view.layoutIfNeeded()
+        mainView.addSubview(contentViewController.view)
         setupConstraints()
     }
     
