@@ -35,9 +35,11 @@ class ImageWithTitleViewController: UIViewController {
     }
     
     private func setupConstraints() {
+        let randomHeight = Int.random(in: 200...470)
+        
         imageView.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview()
-            $0.height.equalTo(200)
+            $0.top.leading.trailing.equalToSuperview()
+            $0.height.equalTo(randomHeight)
         }
         label.snp.makeConstraints {
             $0.top.equalTo(imageView.snp.bottom).offset(20)

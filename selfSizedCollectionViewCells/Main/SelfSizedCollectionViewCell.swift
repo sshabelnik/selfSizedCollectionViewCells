@@ -25,7 +25,7 @@ final class SelfSizedCollectionViewCell: UICollectionViewCell {
         }
         mainView.snp.makeConstraints {
             $0.edges.equalToSuperview()
-            $0.width.equalTo(UIScreen.main.bounds.width).priority(999)
+//            $0.width.equalTo(UIScreen.main.bounds.width).priority(999)
         }
     }
     
@@ -37,22 +37,39 @@ final class SelfSizedCollectionViewCell: UICollectionViewCell {
         super.prepareForReuse()
         isHeightCalculated = false
     }
-    
-    override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
-        if !isHeightCalculated {
-            let layoutAttributes = super.preferredLayoutAttributesFitting(layoutAttributes)
-            setNeedsLayout()
-            layoutIfNeeded()
 
-            let size = contentView.systemLayoutSizeFitting(layoutAttributes.size)
-            var frame = layoutAttributes.frame
-            frame.size.height = ceil(size.height)
-            layoutAttributes.frame = frame
-            isHeightCalculated = true
-            print("NEW FRAME IS: \(frame)")
+    
+    override func systemLayoutSizeFitting(
+        _ targetSize: CGSize,
+        withHorizontalFittingPriority horizontalFittingPriority: UILayoutPriority,
+        verticalFittingPriority: UILayoutPriority) -> CGSize {
+            var targetSize = targetSize
+            targetSize.height = 0
+
+            let size = super.systemLayoutSizeFitting(
+                targetSize,
+                withHorizontalFittingPriority: .required,
+                verticalFittingPriority: .fittingSizeLevel
+            )
+            
+            print("SIZE IS: \(size)")
+            return size
         }
-        return layoutAttributes
-    }
+//    override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
+//        if !isHeightCalculated {
+//            let layoutAttributes = super.preferredLayoutAttributesFitting(layoutAttributes)
+//            setNeedsLayout()
+//            layoutIfNeeded()
+//
+//            let size = contentView.systemLayoutSizeFitting(layoutAttributes.size)
+//            var frame = layoutAttributes.frame
+//            frame.size.height = ceil(size.height)
+//            layoutAttributes.frame = frame
+//            isHeightCalculated = true
+//            print("NEW FRAME IS: \(frame)")
+//        }
+//        return layoutAttributes
+//    }
     
     func addContentViewController(_ parentViewController: UIViewController) {
         guard let contentViewController = contentViewController else { return }
